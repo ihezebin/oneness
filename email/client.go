@@ -1,6 +1,7 @@
 package email
 
 import (
+	"context"
 	"fmt"
 
 	"gopkg.in/gomail.v2"
@@ -27,7 +28,7 @@ func (client *Client) Kernel() *gomail.Dialer {
 	return client.kernel
 }
 
-func (client *Client) Send(message Message) error {
+func (client *Client) Send(ctx context.Context, message Message) error {
 	username := client.config.Username
 	if message.Sender == "" {
 		message.Sender = username

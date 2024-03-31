@@ -14,7 +14,7 @@ import (
 
 func TestTencent(t *testing.T) {
 	ctx := context.Background()
-	client := tencent.NewClientWithConfig(tencent.Config{
+	client := tencent.NewClient(tencent.Config{
 		SecretID:  "SecretID",
 		SecretKey: "SecretKey",
 		BucketURL: "http://images.hezebin.com",
@@ -39,7 +39,7 @@ func TestTencent(t *testing.T) {
 }
 
 func TestQiniu(t *testing.T) {
-	client := qiniu.NewClientWithConfig(qiniu.Config{
+	client := qiniu.NewClient(qiniu.Config{
 		Zone:      qiniu.ZoneHuanan,
 		AccessKey: "AccessKey",
 		SecretKey: "SecretKey",
@@ -51,7 +51,7 @@ func TestQiniu(t *testing.T) {
 		t.Log(err)
 		return
 	}
-	url, err := client.Upload(file, "Korbin.jpg")
+	url, err := client.Upload(context.Background(), file, "Korbin.jpg")
 	if err != nil {
 		t.Log(err, url)
 		return
@@ -60,7 +60,7 @@ func TestQiniu(t *testing.T) {
 }
 
 func TestUCloud(t *testing.T) {
-	client := ucloud.NewClientWithConfig(ucloud.Config{
+	client := ucloud.NewClient(ucloud.Config{
 		PublicKey:  "PublicKey",
 		PrivateKey: "PrivateKey",
 		FileHost:   "cn-bj.ufileos.com",
@@ -71,7 +71,7 @@ func TestUCloud(t *testing.T) {
 		fmt.Println(err)
 		return
 	}
-	url, err := client.Upload(file, "Korbin.jpg")
+	url, err := client.Upload(context.Background(), file, "Korbin.jpg")
 	if err != nil {
 		t.Log(err, url)
 		return

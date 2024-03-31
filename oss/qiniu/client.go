@@ -2,11 +2,11 @@ package qiniu
 
 import (
 	"context"
+	"io"
+
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/sms/bytes"
 	"github.com/qiniu/go-sdk/v7/storage"
-	"io"
-	"io/ioutil"
 )
 
 type Client struct {
@@ -15,11 +15,7 @@ type Client struct {
 	config Config
 }
 
-func NewClient(options ...Option) *Client {
-	return NewClientWithConfig(newConfig(options...))
-}
-
-func NewClientWithConfig(config Config) *Client {
+func NewClient(config Config) *Client {
 	putPolicy := storage.PutPolicy{
 		Scope: config.Bucket,
 	}
@@ -37,9 +33,9 @@ func NewClientWithConfig(config Config) *Client {
 	}
 }
 
-func (client *Client) Upload(file io.Reader, filename string) (string, error) {
+func (client *Client) Upload(ctx context.Context, file io.Reader, filename string) (string, error) {
 	ret := storage.PutRet{}
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		return "", err
 	}
@@ -50,7 +46,7 @@ func (client *Client) Upload(file io.Reader, filename string) (string, error) {
 	return storage.MakePublicURL(client.config.Domain, filename), err
 }
 
-func (client *Client) Delete(filename string) error {
+func (client *Client) Delete(ctx context.Context, filename string) error {
 	mac := qbox.NewMac(client.config.AccessKey, client.config.SecretKey)
 	cfg := storage.Config{
 		// 是否使用https域名进行资源管理

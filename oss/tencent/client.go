@@ -2,11 +2,12 @@ package tencent
 
 import (
 	"context"
-	"github.com/pkg/errors"
-	"github.com/tencentyun/cos-go-sdk-v5"
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/pkg/errors"
+	"github.com/tencentyun/cos-go-sdk-v5"
 )
 
 type Client struct {
@@ -14,11 +15,7 @@ type Client struct {
 	config Config
 }
 
-func NewClient(options ...Option) *Client {
-	return NewClientWithConfig(newConfig(options...))
-}
-
-func NewClientWithConfig(config Config) *Client {
+func NewClient(config Config) *Client {
 	u, _ := url.Parse(config.BucketURL)
 	b := &cos.BaseURL{BucketURL: u}
 	// 永久密钥

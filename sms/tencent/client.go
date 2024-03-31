@@ -1,9 +1,10 @@
 package tencent
 
 import (
+	"context"
 	"fmt"
-	"github.com/pkg/errors"
 
+	"github.com/pkg/errors"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	tencentErrors "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
@@ -15,12 +16,8 @@ type Client struct {
 	config Config
 }
 
-func NewClient(options ...Option) (*Client, error) {
-	return NewClientWithConfig(newConfig(options...))
-}
-
-// NewClientWithConfig 实例化一个认证客户端，入参需要传入腾讯云账户密钥对secretId，secretKey
-func NewClientWithConfig(config Config) (*Client, error) {
+// NewClient 实例化一个认证客户端，入参需要传入腾讯云账户密钥对secretId，secretKey
+func NewClient(config Config) (*Client, error) {
 	if config.SecretKey == "" || config.SecretId == "" {
 		return nil, errors.New("create sms client must need secret_id and secret_key")
 	}
@@ -68,11 +65,11 @@ type FailedInfo struct {
 	Message   string `json:"message"`
 }
 
-// SendSms 发送短信
+// Send 发送短信
 // msg: 短信消息体, 包含短信签名和模板等信息, 使用 NewMessage() 生成
 // telephones: 下发手机号码，采用 E.164 标准，+[国家或地区码][手机号]
 //   - 示例如：+8613711112222， 其中前面有一个+号 ，86为国家码，13711112222为手机号，最多不要超过200个手机号
-func (client *Client) SendSms(msg *Message, telephones ...string) ([]FailedInfo, error) {
+func (client *Client) Send(ctx context.Context, msg *Message, telephones ...string) ([]FailedInfo, error) {
 	/* 实例化一个请求对象，根据调用的接口和实际情况，可以进一步设置请求参数
 	 * 你可以直接查询SDK源码确定接口有哪些属性可以设置
 	 * 属性可能是基本类型，也可能引用了另一个数据结构

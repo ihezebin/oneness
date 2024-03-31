@@ -1,8 +1,10 @@
 package ucloud
 
 import (
-	ufsdk "github.com/ufilesdk-dev/ufile-gosdk"
+	"context"
 	"io"
+
+	ufsdk "github.com/ufilesdk-dev/ufile-gosdk"
 )
 
 type Client struct {
@@ -10,11 +12,7 @@ type Client struct {
 	config Config
 }
 
-func NewClient(options ...Option) *Client {
-	return NewClientWithConfig(newConfig(options...))
-}
-
-func NewClientWithConfig(config Config) *Client {
+func NewClient(config Config) *Client {
 	return &Client{
 		kernel: &ufsdk.Config{
 			PublicKey:       config.PublicKey,
@@ -32,7 +30,7 @@ func (client *Client) Kernel() *ufsdk.Config {
 	return client.kernel
 }
 
-func (client *Client) Upload(file io.Reader, key string) (string, error) {
+func (client *Client) Upload(ctx context.Context, file io.Reader, key string) (string, error) {
 	req, err := ufsdk.NewFileRequest(client.kernel, nil)
 	if err != nil {
 		return "", err
@@ -44,7 +42,7 @@ func (client *Client) Upload(file io.Reader, key string) (string, error) {
 	return req.GetPublicURL(key), err
 }
 
-func (client *Client) Delete(key string) error {
+func (client *Client) Delete(ctx context.Context, key string) error {
 	req, err := ufsdk.NewFileRequest(client.kernel, nil)
 	if err != nil {
 		return err

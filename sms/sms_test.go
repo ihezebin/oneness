@@ -1,15 +1,15 @@
 package smsc
 
 import (
+	"context"
 	"testing"
 
 	"github.com/ihezebin/oneness/sms/aliyun"
 	"github.com/ihezebin/oneness/sms/tencent"
-	"github.com/ihezebin/sdk/utils/common"
 )
 
 func TestTencentSms(t *testing.T) {
-	client, err := tencent.NewClientWithConfig(tencent.Config{
+	client, err := tencent.NewClient(tencent.Config{
 		SecretId:  "SecretId",
 		SecretKey: "SecretKey",
 		Region:    "ap-guangzhou",
@@ -19,7 +19,7 @@ func TestTencentSms(t *testing.T) {
 	}
 	msg := tencent.NewMessage().WithAppId("1400578890").WithSignName("hezebin").
 		WithTemplate("11477481", 123321, 10)
-	faileds, err := client.SendSms(msg, "+8613518468111")
+	faileds, err := client.Send(context.Background(), msg, "+8613518468111")
 	if err != nil {
 		t.Error(faileds)
 		t.Fatal(err)
@@ -28,15 +28,15 @@ func TestTencentSms(t *testing.T) {
 }
 
 func TestAliyunSms(t *testing.T) {
-	client, err := aliyun.NewClientWithConfig(aliyun.Config{
+	client, err := aliyun.NewClient(aliyun.Config{
 		AccessKeyId:     "",
 		AccessKeySecret: "",
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	msg := aliyun.NewMessage().WithSignName("sign").WithTemplate("code", common.Json{})
-	err = client.SendSms(msg, "13518468111")
+	msg := aliyun.NewMessage().WithSignName("sign").WithTemplate("code", make(map[string]interface{}))
+	err = client.Send(context.Background(), msg, "13518468111")
 	if err != nil {
 		t.Fatal(err)
 	}
