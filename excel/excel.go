@@ -25,7 +25,7 @@ func New() *Excel {
 	return &Excel{kernel: excelize.NewFile(), sizeCache: new(sync.Map)}
 }
 
-func OpenFile(filename string, opt ...Option) (*Excel, error) {
+func OpenFile(filename string, opt ...Options) (*Excel, error) {
 	file, err := excelize.OpenFile(filename, opt...)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func OpenFile(filename string, opt ...Option) (*Excel, error) {
 	return &Excel{kernel: file, sizeCache: new(sync.Map)}, nil
 }
 
-func OpenReader(r io.Reader, opt ...Option) (*Excel, error) {
+func OpenReader(r io.Reader, opt ...Options) (*Excel, error) {
 	file, err := excelize.OpenReader(r, opt...)
 	if err != nil {
 		return nil, err
@@ -120,4 +120,8 @@ func (e *Excel) GetRows(index int, opts ...ReadOption) ([][]string, bool, error)
 
 func (e *Excel) Kernel() *excelize.File {
 	return e.kernel
+}
+
+func (e *Excel) Close() error {
+	return e.kernel.Close()
 }

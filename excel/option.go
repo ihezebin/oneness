@@ -7,7 +7,7 @@ const (
 	defaultMaxColumn = 1000
 )
 
-type Option = excelize.Options
+type Options = excelize.Options
 
 type ReadOptions struct {
 	MaxRow    int

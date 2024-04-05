@@ -1,6 +1,7 @@
 package email
 
 import (
+	"context"
 	"strings"
 	"testing"
 	"time"
@@ -47,7 +48,7 @@ func TestSendEmail(t *testing.T) {
 			</html>
 		`).
 		WithAttach(NewAttach("test.txt", strings.NewReader("dsadsad")))
-	err = client.Send(msg)
+	err = client.Send(context.Background(), msg)
 	if err != nil {
 		t.Fatal("send mail err:", err)
 	}
