@@ -13,6 +13,7 @@ const (
 
 	CodeInternalServerError
 	CodeBadRequest
+	CodeDatabaseAbnormal
 	CodeUnauthorized
 	CodeNotFound
 	CodeForbidden
@@ -28,6 +29,7 @@ const (
 	CodeMessageOK                  string = "OK"
 	CodeMessageInternalServerError string = "Internal Server Error"
 	CodeMessageBadRequest          string = "Bad Request"
+	CodeMessageDatabaseAbnormal    string = "Database Abnormal"
 	CodeMessageUnauthorized        string = "Unauthorized"
 	CodeMessageNotFound            string = "Not Found"
 	CodeMessageForbidden           string = "Forbidden"
@@ -42,6 +44,7 @@ var code2MessageM = map[Code]string{
 	CodeOK:                  CodeMessageOK,
 	CodeInternalServerError: CodeMessageInternalServerError,
 	CodeBadRequest:          CodeMessageBadRequest,
+	CodeDatabaseAbnormal:    CodeMessageDatabaseAbnormal,
 	CodeUnauthorized:        CodeMessageUnauthorized,
 	CodeNotFound:            CodeMessageNotFound,
 	CodeForbidden:           CodeMessageForbidden,
@@ -86,8 +89,16 @@ func ErrorWithBadRequest() *Error {
 }
 func ErrorWithInternalServer() *Error {
 	return &Error{
-		Status: http.StatusInternalServerError,
+		Status: http.StatusOK,
 		Code:   CodeInternalServerError,
 		Err:    errors.New(code2MessageM[CodeInternalServerError]),
+	}
+}
+
+func ErrorWithDatabaseAbnormal() *Error {
+	return &Error{
+		Status: http.StatusOK,
+		Code:   CodeDatabaseAbnormal,
+		Err:    errors.New(code2MessageM[CodeDatabaseAbnormal]),
 	}
 }
