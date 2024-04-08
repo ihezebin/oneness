@@ -49,6 +49,14 @@ func WithRouter(router func(*gin.Engine)) Option {
 	}
 }
 
+func WithMiddlewares(middlewares ...gin.HandlerFunc) Option {
+	return func(e *gin.Engine) {
+		for _, m := range middlewares {
+			e.Use(m)
+		}
+	}
+}
+
 func WithLoggingRequest(header bool) Option {
 	return func(e *gin.Engine) {
 		e.Use(middleware.ReuseBody(), middleware.LoggingRequest(header))
