@@ -33,7 +33,6 @@ func TestDaemon(t *testing.T) {
 
 func TestHandler(t *testing.T) {
 	handler := NewHandlerWithOptions(
-		WithCorsEveryOrigin(),
 		WithLoggingRequest(false),
 		WithLoggingResponse(false),
 		WithRouter(func(e *gin.Engine) {

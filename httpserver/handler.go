@@ -3,7 +3,6 @@ package httpserver
 import (
 	"io"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ihezebin/oneness/httpserver/middleware"
@@ -50,17 +49,6 @@ func WithRouter(router func(*gin.Engine)) Option {
 	}
 }
 
-func WithCors(origins ...string) Option {
-	return func(e *gin.Engine) {
-		e.Use(middleware.Cors(strings.Join(origins, ",")))
-	}
-}
-
-func WithCorsEveryOrigin() Option {
-	return func(e *gin.Engine) {
-		e.Use(middleware.CorsEveryOrigin())
-	}
-}
 func WithLoggingRequest(header bool) Option {
 	return func(e *gin.Engine) {
 		e.Use(middleware.ReuseBody(), middleware.LoggingRequest(header))
