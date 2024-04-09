@@ -47,10 +47,11 @@ type Router interface {
 	Init(gin.IRouter)
 }
 
-func WithRouters(routers ...Router) Option {
+func WithRouters(basePath string, routers ...Router) Option {
 	return func(e *gin.Engine) {
+		group := e.Group(basePath)
 		for _, router := range routers {
-			router.Init(e)
+			router.Init(group)
 		}
 	}
 }

@@ -19,14 +19,12 @@ func Server() *http.Server {
 	return server
 }
 
-func ResetCloseSecure(secure bool) *http.Server {
+func ResetCloseSecure(secure bool) {
 	closeSecure = secure
-	return server
 }
 
-func ResetServerHandler(handler http.Handler) *http.Server {
+func ResetServerHandler(handler http.Handler) {
 	server.Handler = handler
-	return server
 }
 
 func Daemon(ctx context.Context, port uint) {
