@@ -43,9 +43,15 @@ func NewServerHandlerWithOptions(opts ...Option) *gin.Engine {
 
 type Option func(*gin.Engine)
 
-func WithRouter(router func(*gin.Engine)) Option {
+type Router interface {
+	Init(gin.IRouter)
+}
+
+func WithRouters(routers ...Router) Option {
 	return func(e *gin.Engine) {
-		router(e)
+		for _, router := range routers {
+			router.Init(e)
+		}
 	}
 }
 
