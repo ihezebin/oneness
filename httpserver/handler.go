@@ -8,7 +8,7 @@ import (
 	"github.com/ihezebin/oneness/httpserver/middleware"
 )
 
-func NewHandler() *gin.Engine {
+func NewServerHandler() *gin.Engine {
 	gin.DefaultWriter = io.Discard
 	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()
@@ -22,8 +22,8 @@ func NewHandler() *gin.Engine {
 	return engine
 }
 
-func NewStandardHandler() *gin.Engine {
-	engine := NewHandler()
+func NewStandardServerHandler() *gin.Engine {
+	engine := NewServerHandler()
 	engine.Use(
 		middleware.Recovery(),
 		middleware.ReuseBody(),
@@ -33,8 +33,8 @@ func NewStandardHandler() *gin.Engine {
 	return engine
 }
 
-func NewHandlerWithOptions(opts ...Option) *gin.Engine {
-	engine := NewHandler()
+func NewServerHandlerWithOptions(opts ...Option) *gin.Engine {
+	engine := NewServerHandler()
 	for _, opt := range opts {
 		opt(engine)
 	}
