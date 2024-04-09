@@ -22,8 +22,8 @@ func newBodyWithError(err *Error) *Body {
 	}
 }
 
-type HandlerFn[RequestT any, ResponseT any] func(context.Context, *RequestT, *ResponseT) error
-type HandlerFnEnhanced[RequestT any, ResponseT any] func(*gin.Context, *RequestT, *ResponseT) error
+type HandlerFn[RequestT any, ResponseT any] func(context.Context, *RequestT) (*ResponseT, error)
+type HandlerFnEnhanced[RequestT any, ResponseT any] func(*gin.Context, *RequestT) (*ResponseT, error)
 
 func NewHandlerFunc[RequestT any, ResponseT any](fn HandlerFn[RequestT, ResponseT]) gin.HandlerFunc {
 	return newHandlerFunc(false, fn, nil)
@@ -39,24 +39,25 @@ func newHandlerFunc[RequestT any, ResponseT any](ginCtx bool, fn HandlerFn[Reque
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 		requestPtr := reflect.New(reflect.TypeOf((*RequestT)(nil)).Elem()).Interface()
-		responsePtr := reflect.New(reflect.TypeOf((*ResponseT)(nil)).Elem()).Interface()
 
 		if err := c.ShouldBind(requestPtr); err != nil {
-			logger.WithError(err).Errorf(ctx, "failed to bind, request: %+v, response: %+v", requestPtr, responsePtr)
+			logger.WithError(err).Errorf(ctx, "failed to bind, request: %+v", requestPtr)
 			c.PureJSON(http.StatusBadRequest, newBodyWithError(ErrorWithBadRequest()))
 		}
 
 		var err error
+		var responsePtr *ResponseT
 		if ginCtx {
-			err = fnEnhanced(c, requestPtr.(*RequestT), responsePtr.(*ResponseT))
+			responsePtr, err = fnEnhanced(c, requestPtr.(*RequestT))
+			if c.Writer.Written() {
+				return
+			}
 		} else {
-			err = fn(ctx, requestPtr.(*RequestT), responsePtr.(*ResponseT))
+			responsePtr, err = fn(ctx, requestPtr.(*RequestT))
 		}
-		if c.Writer.Written() {
-			return
-		}
+
+		// handle error
 		if err != nil {
-			c.Writer.Flush()
 			var body *Body
 			status := http.StatusOK
 			switch e := err.(type) {
@@ -75,6 +76,8 @@ func newHandlerFunc[RequestT any, ResponseT any](ginCtx bool, fn HandlerFn[Reque
 			c.PureJSON(status, body)
 			return
 		}
+
+		// handle success
 		c.PureJSON(http.StatusOK, &Body{
 			Code: int(CodeOK),
 			Data: responsePtr,
