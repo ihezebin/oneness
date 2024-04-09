@@ -10,6 +10,21 @@ type Entry struct {
 	*logrus.Entry
 }
 
+func (e *Entry) WithError(err error) *Entry {
+	return &Entry{Entry: e.Entry.WithError(err)}
+}
+
+func (e *Entry) WithField(key string, value interface{}) *Entry {
+	return &Entry{Entry: e.Entry.WithField(key, value)}
+}
+
+func (e *Entry) WithFields(fields map[string]interface{}) *Entry {
+	return &Entry{Entry: e.Entry.WithFields(fields)}
+}
+
+func (e *Entry) Log(ctx context.Context, level logrus.Level, args ...interface{}) {
+	e.Entry.WithContext(ctx).Log(level, args...)
+}
 func (e *Entry) Trace(ctx context.Context, args ...interface{}) {
 	e.Entry.WithContext(ctx).Trace(args...)
 }
@@ -38,6 +53,9 @@ func (e *Entry) Fatal(ctx context.Context, args ...interface{}) {
 	e.Entry.WithContext(ctx).Fatal(args...)
 }
 
+func (e *Entry) Logf(ctx context.Context, level logrus.Level, format string, args ...interface{}) {
+	e.Entry.WithContext(ctx).Logf(level, format, args...)
+}
 func (e *Entry) Tracef(ctx context.Context, format string, args ...interface{}) {
 	e.Entry.WithContext(ctx).Tracef(format, args...)
 }
@@ -64,6 +82,10 @@ func (e *Entry) Panicf(ctx context.Context, format string, args ...interface{}) 
 }
 func (e *Entry) Fatalf(ctx context.Context, format string, args ...interface{}) {
 	e.Entry.WithContext(ctx).Fatalf(format, args...)
+}
+
+func (e *Entry) Logln(ctx context.Context, level logrus.Level, args ...interface{}) {
+	e.Entry.WithContext(ctx).Logln(level, args...)
 }
 func (e *Entry) Traceln(ctx context.Context, args ...interface{}) {
 	e.Entry.WithContext(ctx).Traceln(args...)

@@ -47,6 +47,9 @@ func WithFields(fields map[string]interface{}) *Entry {
 	return &Entry{Entry: logger.WithFields(fields)}
 }
 
+func Log(ctx context.Context, level logrus.Level, args ...interface{}) {
+	logger.WithContext(ctx).Log(level, args...)
+}
 func Trace(ctx context.Context, args ...interface{})   { logger.WithContext(ctx).Trace(args...) }
 func Debug(ctx context.Context, args ...interface{})   { logger.WithContext(ctx).Debug(args...) }
 func Print(ctx context.Context, args ...interface{})   { logger.WithContext(ctx).Print(args...) }
@@ -57,6 +60,9 @@ func Error(ctx context.Context, args ...interface{})   { logger.WithContext(ctx)
 func Panic(ctx context.Context, args ...interface{})   { logger.WithContext(ctx).Panic(args...) }
 func Fatal(ctx context.Context, args ...interface{})   { logger.WithContext(ctx).Fatal(args...) }
 
+func Logf(ctx context.Context, level logrus.Level, format string, args ...interface{}) {
+	logger.WithContext(ctx).Logf(level, format, args...)
+}
 func Tracef(ctx context.Context, format string, args ...interface{}) {
 	logger.WithContext(ctx).Tracef(format, args...)
 }
@@ -83,6 +89,10 @@ func Panicf(ctx context.Context, format string, args ...interface{}) {
 }
 func Fatalf(ctx context.Context, format string, args ...interface{}) {
 	logger.WithContext(ctx).Fatalf(format, args...)
+}
+
+func Logln(ctx context.Context, level logrus.Level, args ...interface{}) {
+	logger.WithContext(ctx).Logln(level, args...)
 }
 func Traceln(ctx context.Context, args ...interface{}) {
 	logger.WithContext(ctx).Traceln(args...)
