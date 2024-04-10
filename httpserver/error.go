@@ -13,7 +13,6 @@ const (
 
 	CodeInternalServerError
 	CodeBadRequest
-	CodeDatabaseAbnormal
 	CodeUnauthorized
 	CodeNotFound
 	CodeForbidden
@@ -23,13 +22,13 @@ const (
 	CodeAccepted
 	CodeNoContent
 	CodeResetContent
+	CodeValidateRuleFailed
 )
 
 const (
 	CodeMessageOK                  string = "OK"
 	CodeMessageInternalServerError string = "Internal Server Error"
 	CodeMessageBadRequest          string = "Bad Request"
-	CodeMessageDatabaseAbnormal    string = "Database Abnormal"
 	CodeMessageUnauthorized        string = "Unauthorized"
 	CodeMessageNotFound            string = "Not Found"
 	CodeMessageForbidden           string = "Forbidden"
@@ -38,13 +37,13 @@ const (
 	CodeMessageAccepted            string = "Accepted"
 	CodeMessageNoContent           string = "No Content"
 	CodeMessageResetContent        string = "Reset Content"
+	CodeMessageValidateRuleFailed  string = "Validate Rule Failed"
 )
 
 var code2MessageM = map[Code]string{
 	CodeOK:                  CodeMessageOK,
 	CodeInternalServerError: CodeMessageInternalServerError,
 	CodeBadRequest:          CodeMessageBadRequest,
-	CodeDatabaseAbnormal:    CodeMessageDatabaseAbnormal,
 	CodeUnauthorized:        CodeMessageUnauthorized,
 	CodeNotFound:            CodeMessageNotFound,
 	CodeForbidden:           CodeMessageForbidden,
@@ -53,6 +52,7 @@ var code2MessageM = map[Code]string{
 	CodeAccepted:            CodeMessageAccepted,
 	CodeNoContent:           CodeMessageNoContent,
 	CodeResetContent:        CodeMessageResetContent,
+	CodeValidateRuleFailed:  CodeMessageValidateRuleFailed,
 }
 
 type Error struct {
@@ -74,9 +74,15 @@ func (e *Error) WithStatus(status int) *Error {
 
 func ErrorWithCode(code Code) *Error {
 	return &Error{
-		Status: http.StatusOK,
-		Code:   code,
-		Err:    errors.New(code2MessageM[code]),
+		Code: code,
+		Err:  errors.New(code2MessageM[code]),
+	}
+}
+
+func NewError(code Code, msg string) *Error {
+	return &Error{
+		Code: code,
+		Err:  errors.New(msg),
 	}
 }
 
@@ -89,16 +95,7 @@ func ErrorWithBadRequest() *Error {
 }
 func ErrorWithInternalServer() *Error {
 	return &Error{
-		Status: http.StatusOK,
-		Code:   CodeInternalServerError,
-		Err:    errors.New(code2MessageM[CodeInternalServerError]),
-	}
-}
-
-func ErrorWithDatabaseAbnormal() *Error {
-	return &Error{
-		Status: http.StatusOK,
-		Code:   CodeDatabaseAbnormal,
-		Err:    errors.New(code2MessageM[CodeDatabaseAbnormal]),
+		Code: CodeInternalServerError,
+		Err:  errors.New(code2MessageM[CodeInternalServerError]),
 	}
 }

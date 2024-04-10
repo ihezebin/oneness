@@ -7,19 +7,29 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ihezebin/oneness/logger"
+	"github.com/pkg/errors"
 )
 
 type Body struct {
-	Code    int         `json:"code"`
+	status  int
+	Code    Code        `json:"code"`
 	Message string      `json:"message,omitempty"`
 	Data    interface{} `json:"data,omitempty"`
 }
 
-func newBodyWithError(err *Error) *Body {
-	return &Body{
-		Code:    int(err.Code),
-		Message: err.Error(),
+func (b *Body) WithError(err error) *Body {
+	b.Code = CodeInternalServerError
+	b.Message = err.Error()
+	return b
+}
+
+func (b *Body) WithErrorx(errx *Error) *Body {
+	b.Code = errx.Code
+	b.Message = errx.Error()
+	if errx.Status != 0 {
+		b.status = errx.Status
 	}
+	return b
 }
 
 type HandlerFn[RequestT any, ResponseT any] func(context.Context, *RequestT) (*ResponseT, error)
@@ -38,15 +48,24 @@ func newHandlerFunc[RequestT any, ResponseT any](ginCtx bool, fn HandlerFn[Reque
 
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
-		requestPtr := reflect.New(reflect.TypeOf((*RequestT)(nil)).Elem()).Interface()
-
-		if err := c.ShouldBind(requestPtr); err != nil {
-			logger.WithError(err).Errorf(ctx, "failed to bind, request: %+v", requestPtr)
-			c.PureJSON(http.StatusBadRequest, newBodyWithError(ErrorWithBadRequest()))
-		}
-
 		var err error
 		var responsePtr *ResponseT
+
+		body := &Body{
+			status: http.StatusOK,
+			Code:   CodeOK,
+			Data:   responsePtr,
+		}
+
+		requestPtr := reflect.New(reflect.TypeOf((*RequestT)(nil)).Elem()).Interface()
+
+		if err = c.ShouldBind(requestPtr); err != nil {
+			logger.WithError(err).Errorf(ctx, "failed to bind, uri: %s, request: %+v", c.Request.RequestURI, requestPtr)
+			body = body.WithErrorx(ErrorWithBadRequest())
+			c.PureJSON(http.StatusBadRequest, body.WithErrorx(ErrorWithBadRequest()))
+			return
+		}
+
 		if ginCtx {
 			responsePtr, err = fnEnhanced(c, requestPtr.(*RequestT))
 			if c.Writer.Written() {
@@ -58,29 +77,15 @@ func newHandlerFunc[RequestT any, ResponseT any](ginCtx bool, fn HandlerFn[Reque
 
 		// handle error
 		if err != nil {
-			var body *Body
-			status := http.StatusOK
-			switch e := err.(type) {
-			case *Error:
-				body = newBodyWithError(e)
-				if e.Status != 0 {
-					status = e.Status
-				}
-			case error:
-				body = &Body{
-					Code:    int(CodeInternalServerError),
-					Message: e.Error(),
-				}
+			var errx *Error
+			if errors.As(err, errx) {
+				body = body.WithErrorx(errx)
+			} else {
+				body = body.WithError(err)
 			}
-			logger.WithError(err).Errorf(ctx, "failed to handle, request: %+v, response: %+v", requestPtr, responsePtr)
-			c.PureJSON(status, body)
-			return
 		}
 
 		// handle success
-		c.PureJSON(http.StatusOK, &Body{
-			Code: int(CodeOK),
-			Data: responsePtr,
-		})
+		c.PureJSON(body.status, body)
 	}
 }
