@@ -40,3 +40,17 @@ func WithTimestampHook() Option {
 		l.AddHook(hook.NewTimestampHook())
 	}
 }
+
+func WithLevel(level logrus.Level) Option {
+	return func(l *logrus.Logger) {
+		l.SetLevel(level)
+	}
+}
+
+func WithServiceName(serviceName string) Option {
+	return func(l *logrus.Logger) {
+		l.AddHook(hook.NewFieldsHook(logrus.Fields{
+			hook.FieldKeyServiceName: serviceName,
+		}))
+	}
+}

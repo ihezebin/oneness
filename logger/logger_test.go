@@ -11,7 +11,7 @@ import (
 var ctx = context.Background()
 
 func TestLogger(t *testing.T) {
-	ResetLoggerWithOptions(WithCallerHook(), WithTimestampHook())
+	ResetLoggerWithOptions(WithCallerHook(), WithTimestampHook(), WithServiceName("unit_test"))
 	WithField("key", "value").Info(ctx, "hello")
 }
 
