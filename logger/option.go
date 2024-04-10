@@ -9,24 +9,23 @@ import (
 
 type Option func(*logrus.Logger)
 
-func WithLocalFsHook(path string) (Option, *hook.LocalFsHook, error) {
+func WithLocalFsHook(path string) Option {
 	localFsHook, err := hook.NewLocalFsHook(path)
 	if err != nil {
-		return nil, localFsHook, err
+		panic(err)
 	}
 	return func(l *logrus.Logger) {
 		l.AddHook(localFsHook)
-	}, localFsHook, nil
+	}
 }
-func WithRotateLogsHook(path string, rotateTime time.Duration, expireTime time.Duration) (Option,
-	*hook.RotateLogsHook, error) {
+func WithRotateLogsHook(path string, rotateTime time.Duration, expireTime time.Duration) Option {
 	rotateLogsHook, err := hook.NewRotateLogsHook(path, rotateTime, expireTime)
 	if err != nil {
-		return nil, nil, err
+		panic(err)
 	}
 	return func(l *logrus.Logger) {
 		l.AddHook(rotateLogsHook)
-	}, rotateLogsHook, nil
+	}
 }
 
 func WithCallerHook() Option {

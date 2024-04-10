@@ -24,14 +24,7 @@ func TestLocalFsHook(t *testing.T) {
 	filename := filepath.Join(pwd, "localfs.log")
 
 	t.Log(pwd, filename)
-
-	option, hook, err := WithLocalFsHook(filename)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer hook.Close()
-
-	ResetLoggerWithOptions(WithCallerHook(), option)
+	ResetLoggerWithOptions(WithCallerHook(), WithLocalFsHook(filename))
 
 	Info(ctx, "hello world")
 	Errorf(ctx, "hello world error")
@@ -47,13 +40,7 @@ func TestRotateLogsFsHook(t *testing.T) {
 
 	t.Log(pwd, filename)
 
-	option, hook, err := WithRotateLogsHook(filename, time.Second*3, time.Second*9)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer hook.Close()
-
-	ResetLoggerWithOptions(WithCallerHook(), option)
+	ResetLoggerWithOptions(WithCallerHook(), WithRotateLogsHook(filename, time.Second*3, time.Second*9))
 
 	for i := 0; i < 12; i++ {
 		Info(ctx, "hello world ", time.Now().Format(time.DateTime))
