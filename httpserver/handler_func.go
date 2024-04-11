@@ -62,7 +62,7 @@ func newHandlerFunc[RequestT any, ResponseT any](ginCtx bool, fn HandlerFn[Reque
 		if err = c.ShouldBind(requestPtr); err != nil {
 			logger.WithError(err).Errorf(ctx, "failed to bind, uri: %s, request: %+v", c.Request.RequestURI, requestPtr)
 			body = body.WithErrorx(ErrorWithBadRequest())
-			c.PureJSON(http.StatusBadRequest, body.WithErrorx(ErrorWithBadRequest()))
+			c.PureJSON(http.StatusBadRequest, body)
 			return
 		}
 
@@ -86,6 +86,7 @@ func newHandlerFunc[RequestT any, ResponseT any](ginCtx bool, fn HandlerFn[Reque
 		}
 
 		// handle success
+		body.Data = responsePtr
 		c.PureJSON(body.status, body)
 	}
 }

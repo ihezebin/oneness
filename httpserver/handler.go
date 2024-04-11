@@ -26,7 +26,6 @@ func NewStandardServerHandler() *gin.Engine {
 	engine := NewServerHandler()
 	engine.Use(
 		middleware.Recovery(),
-		middleware.ReuseBody(),
 		middleware.LoggingRequest(true),
 		middleware.LoggingResponse(true),
 	)
@@ -66,9 +65,16 @@ func WithMiddlewares(middlewares ...gin.HandlerFunc) Option {
 
 func WithLoggingRequest(header bool) Option {
 	return func(e *gin.Engine) {
-		e.Use(middleware.ReuseBody(), middleware.LoggingRequest(header))
+		e.Use(middleware.LoggingRequest(header))
 	}
 }
+
+func WithReuseBody() Option {
+	return func(e *gin.Engine) {
+		e.Use(middleware.ReuseBody())
+	}
+}
+
 func WithLoggingResponse(header bool) Option {
 	return func(e *gin.Engine) {
 		e.Use(middleware.LoggingResponse(header))

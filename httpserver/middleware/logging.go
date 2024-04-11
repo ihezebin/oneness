@@ -20,7 +20,7 @@ func LoggingRequest(header bool) gin.HandlerFunc {
 			"method": c.Request.Method,
 			"uri":    c.Request.URL.RequestURI(),
 			"remote": c.Request.RemoteAddr,
-			"body":   requestBody(c.Request.Body),
+			"body":   requestBody(c),
 		}
 		if header {
 			fields["header"] = c.Request.Header
@@ -30,14 +30,17 @@ func LoggingRequest(header bool) gin.HandlerFunc {
 	}
 }
 
-func requestBody(body io.ReadCloser) string {
-	if body == nil || body == http.NoBody {
+func requestBody(c *gin.Context) string {
+	if c.Request.Body == nil || c.Request.Body == http.NoBody {
 		return ""
 	}
-	bodyData, err := io.ReadAll(body)
+	bodyData, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		return fmt.Sprintf("read request body err: %s", err.Error())
 	}
+	_ = c.Request.Body.Close()
+	c.Request.Body = io.NopCloser(bytes.NewReader(bodyData))
+
 	bodySize := len(bodyData)
 	if bodySize > maxBodyLen {
 		bodySize = maxBodyLen

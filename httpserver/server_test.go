@@ -42,7 +42,7 @@ func TestHandler(t *testing.T) {
 	handler.GET("ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
 	})
-	handler.GET("hello", NewHandlerFunc(HandleHello))
+	handler.Any("hello", NewHandlerFunc(HandleHello))
 	handler.GET("hi", NewHandlerFuncEnhanced(HandleHi))
 
 	if err := Run(ctx, 8080); err != nil {
@@ -62,7 +62,7 @@ type resp struct {
 func HandleHello(ctx context.Context, req *req) (*resp, error) {
 	logger.Infof(ctx, "%+v", req)
 	return &resp{
-		SayHi: "hello world!",
+		SayHi: "hello world!" + req.Name,
 	}, nil
 }
 func HandleHi(c *gin.Context, req *req) (*string, error) {
