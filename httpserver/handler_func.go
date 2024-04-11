@@ -78,15 +78,17 @@ func newHandlerFunc[RequestT any, ResponseT any](ginCtx bool, fn HandlerFn[Reque
 		// handle error
 		if err != nil {
 			var errx *Error
-			if errors.As(err, errx) {
+			if errors.As(err, &errx) {
 				body = body.WithErrorx(errx)
 			} else {
 				body = body.WithError(err)
 			}
+			body.Data = nil
+		} else {
+			body.Data = responsePtr
 		}
 
 		// handle success
-		body.Data = responsePtr
 		c.PureJSON(body.status, body)
 	}
 }

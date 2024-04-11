@@ -63,7 +63,7 @@ func HandleHello(ctx context.Context, req *req) (*resp, error) {
 	logger.Infof(ctx, "%+v", req)
 	return &resp{
 		SayHi: "hello world!" + req.Name,
-	}, nil
+	}, ErrorWithCode(CodeBadRequest)
 }
 func HandleHi(c *gin.Context, req *req) (*string, error) {
 	ctx := c.Request.Context()
