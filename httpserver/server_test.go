@@ -14,14 +14,14 @@ import (
 var ctx = context.Background()
 
 func TestServer(t *testing.T) {
-	handler := NewStandardHandler()
+	handler := NewStandardServerHandler()
 	ResetServerHandler(handler)
 	if err := Run(ctx, 8080); err != nil {
 		t.Fatal(err)
 	}
 }
 func TestDaemon(t *testing.T) {
-	handler := NewStandardHandler()
+	handler := NewStandardServerHandler()
 	ResetServerHandler(handler)
 	Daemon(ctx, 8080)
 	defer Close(ctx)
@@ -32,18 +32,19 @@ func TestDaemon(t *testing.T) {
 }
 
 func TestHandler(t *testing.T) {
-	handler := NewHandlerWithOptions(
+	logger.ResetLoggerWithOptions(logger.WithCallerHook())
+	handler := NewServerHandlerWithOptions(
 		WithLoggingRequest(false),
 		WithLoggingResponse(false),
-		WithRouter(func(e *gin.Engine) {
-			e.GET("ping", func(c *gin.Context) {
-				c.String(http.StatusOK, "pong")
-			})
-			e.GET("hello", NewHandlerFunc(HandleHello))
-			e.GET("hi", NewHandlerFuncEnhanced(HandleHi))
-		}),
 	)
 	ResetServerHandler(handler)
+
+	handler.GET("ping", func(c *gin.Context) {
+		c.String(http.StatusOK, "pong")
+	})
+	handler.GET("hello", NewHandlerFunc(HandleHello))
+	handler.GET("hi", NewHandlerFuncEnhanced(HandleHi))
+
 	if err := Run(ctx, 8080); err != nil {
 		t.Fatal(err)
 	}
@@ -58,15 +59,16 @@ type resp struct {
 	SayHi string `json:"say_hi"`
 }
 
-func HandleHello(ctx context.Context, req *req, resp *resp) error {
+func HandleHello(ctx context.Context, req *req) (*resp, error) {
 	logger.Infof(ctx, "%+v", req)
-	resp.SayHi = "hello world!"
-	return nil
+	return &resp{
+		SayHi: "hello world!",
+	}, nil
 }
-func HandleHi(c *gin.Context, req *req, data *string) error {
+func HandleHi(c *gin.Context, req *req) (*string, error) {
 	ctx := c.Request.Context()
 	logger.Infof(ctx, "%+v", req)
-	*data = "hello world!"
 	c.JSON(http.StatusInternalServerError, "overwrite the default body struct")
-	return errors.New("test err")
+	msg := "hello world!"
+	return &msg, errors.New("test err")
 }
