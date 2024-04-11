@@ -64,7 +64,7 @@ type Error struct {
 var _ error = &Error{}
 
 func (e *Error) Error() string {
-	return e.Error()
+	return e.Err.Error()
 }
 
 func (e *Error) WithStatus(status int) *Error {
