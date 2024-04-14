@@ -9,8 +9,6 @@ import (
 )
 
 func NewServerHandler() *gin.Engine {
-	gin.DefaultWriter = io.Discard
-	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()
 	engine.Use(middleware.Recovery())
 
@@ -86,5 +84,11 @@ func WithServiceName(name string) Option {
 		engine.Use(func(c *gin.Context) {
 			c.Set("service", name)
 		})
+	}
+}
+
+func WithHiddenRoutesLog() Option {
+	return func(engine *gin.Engine) {
+		gin.DefaultWriter = io.Discard
 	}
 }
