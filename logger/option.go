@@ -34,7 +34,7 @@ func WithCallerHook() Option {
 		l.AddHook(hook.NewCallerHook(false))
 	}
 }
-func WithCallerPrettyHook() Option {
+func WithPrettyCallerHook() Option {
 	return func(l *logrus.Logger) {
 		l.AddHook(hook.NewCallerHook(true))
 	}
