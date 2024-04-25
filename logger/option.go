@@ -29,16 +29,16 @@ func WithRotateLogsHook(path string, rotateTime time.Duration, expireTime time.D
 	}
 }
 
-func WithCallerHook() Option {
-	return func(l *logrus.Logger) {
-		l.AddHook(hook.NewCallerHook(false))
-	}
-}
-func WithPrettyCallerHook() Option {
-	return func(l *logrus.Logger) {
-		l.AddHook(hook.NewCallerHook(true))
-	}
-}
+//func WithCallerHook() Option {
+//	return func(l *logrus.Logger) {
+//		l.AddHook(hook.NewCallerHook())
+//	}
+//}
+//func WithPrettyCallerHook() Option {
+//	return func(l *logrus.Logger) {
+//		l.AddHook(hook.NewPrettyCallerHook())
+//	}
+//}
 
 func WithTimestampHook() Option {
 	return func(l *logrus.Logger) {

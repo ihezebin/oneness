@@ -16,10 +16,11 @@ type CallerHook struct {
 
 var _ logrus.Hook = &CallerHook{}
 
-func NewCallerHook(prettyFilename bool) logrus.Hook {
-	return &CallerHook{
-		prettyFilename: prettyFilename,
-	}
+func NewCallerHook() logrus.Hook {
+	return &CallerHook{}
+}
+func NewPrettyCallerHook() logrus.Hook {
+	return &CallerHook{prettyFilename: true}
 }
 
 func (s *CallerHook) Levels() []logrus.Level {
