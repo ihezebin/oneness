@@ -1,6 +1,5 @@
 package hook
 
-import "C"
 import (
 	"fmt"
 	"path"
@@ -16,11 +15,10 @@ type CallerHook struct {
 
 var _ logrus.Hook = &CallerHook{}
 
-func NewCallerHook() logrus.Hook {
-	return &CallerHook{}
-}
-func NewPrettyCallerHook() logrus.Hook {
-	return &CallerHook{prettyFilename: true}
+func NewCallerHook(prettyFilename bool) logrus.Hook {
+	return &CallerHook{
+		prettyFilename: prettyFilename,
+	}
 }
 
 func (s *CallerHook) Levels() []logrus.Level {
