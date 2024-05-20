@@ -15,6 +15,7 @@ const (
 	SchemeCOS   = "cos" // 腾讯云
 	SchemeMinio = "minio"
 	SchemeKodo  = "kodo" // 七牛云
+	SchemeUS3   = "us3"  // ucloud
 )
 
 type ObjectInfo struct {
@@ -85,6 +86,7 @@ func NewClient(dsn string) (Client, error) {
 		return NewOSSClient(u.Host, accessKey, secretKey, bucket)
 	case SchemeCOS:
 		return NewCOSClient(u.Host, accessKey, secretKey, bucket)
+	//case SchemeUS3:
 	//case SchemeKodo:
 	//return NewKodoClient(u.Host, accessKey, secretKey, bucket)
 	default:
