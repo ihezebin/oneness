@@ -52,6 +52,9 @@ func (c *ossClient) PutObject(ctx context.Context, name string, reader io.Reader
 	if opt.Size != -1 {
 		ossOpts = append(ossOpts, oss.ContentLength(opt.Size))
 	}
+	if opt.ContentType != "" {
+		ossOpts = append(ossOpts, oss.ContentType(opt.ContentType))
+	}
 
 	if err := c.bucket.PutObject(name, reader, ossOpts...); err != nil {
 		return errors.Wrapf(err, "oss put object err")

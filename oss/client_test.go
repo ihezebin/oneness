@@ -16,14 +16,30 @@ func TestMinioClient(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	file, err := os.Open("./test.txt")
+	file, err := os.Open("./664b73a08543301506115cf8.jpg")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	buffer := make([]byte, 512)
+	_, err = file.Read(buffer)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	contentType := http.DetectContentType(buffer)
+	_, err = file.Seek(0, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	stat, err := file.Stat()
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	key := filepath.Base(file.Name())
-
-	err = client.PutObject(ctx, key, file)
+	err = client.PutObject(ctx, key, file, WithContentType(contentType), WithSize(stat.Size()))
 	if err != nil {
 		t.Fatal(err)
 	}

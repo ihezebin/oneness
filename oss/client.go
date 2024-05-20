@@ -28,7 +28,8 @@ type ObjectInfo struct {
 }
 
 type PutOptions struct {
-	Size int64
+	Size        int64
+	ContentType string
 }
 
 type PutOption func(*PutOptions)
@@ -36,6 +37,12 @@ type PutOption func(*PutOptions)
 func WithSize(size int64) PutOption {
 	return func(opt *PutOptions) {
 		opt.Size = size
+	}
+}
+
+func WithContentType(contentType string) PutOption {
+	return func(opt *PutOptions) {
+		opt.ContentType = contentType
 	}
 }
 

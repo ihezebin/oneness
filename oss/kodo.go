@@ -63,9 +63,14 @@ func (c *kodoClient) PutObject(ctx context.Context, name string, reader io.Reade
 	opts = append([]PutOption{WithSize(int64(len(data)))}, opts...)
 	opt := newPutOptions(opts...)
 
+	kodoOpt := &storage.PutExtra{}
+	if opt.ContentType != "" {
+		kodoOpt.MimeType = opt.ContentType
+	}
+
 	ret := storage.PutRet{}
 
-	if err = c.uploader.Put(ctx, &ret, c.token(), name, bytes.NewReader(data), opt.Size, nil); err != nil {
+	if err = c.uploader.Put(ctx, &ret, c.token(), name, bytes.NewReader(data), opt.Size, kodoOpt); err != nil {
 		return errors.Wrapf(err, "kodo put object err")
 	}
 

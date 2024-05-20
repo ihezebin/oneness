@@ -48,7 +48,12 @@ func (c *minioClient) GetObject(ctx context.Context, name string) (io.ReadCloser
 func (c *minioClient) PutObject(ctx context.Context, name string, reader io.Reader, opts ...PutOption) error {
 	opt := newPutOptions(opts...)
 
-	if _, err := c.kernel.PutObject(ctx, c.bucket, name, reader, opt.Size, minio.PutObjectOptions{}); err != nil {
+	miniOpt := minio.PutObjectOptions{}
+	if opt.ContentType != "" {
+		miniOpt.ContentType = opt.ContentType
+	}
+
+	if _, err := c.kernel.PutObject(ctx, c.bucket, name, reader, opt.Size, miniOpt); err != nil {
 		return errors.Wrapf(err, "minio put object err")
 	}
 

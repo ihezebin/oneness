@@ -62,6 +62,10 @@ func (c *cosClient) PutObject(ctx context.Context, name string, reader io.Reader
 		cosOpts.ContentLength = opt.Size
 	}
 
+	if opt.ContentType != "" {
+		cosOpts.ContentType = opt.ContentType
+	}
+
 	if _, err := c.kernel.Object.Put(ctx, name, reader, cosOpts); err != nil {
 		return errors.Wrapf(err, "cos put object err")
 	}
