@@ -60,10 +60,19 @@ func newHandlerFunc[RequestT any, ResponseT any](ginCtx bool, fn HandlerFn[Reque
 		requestPtr := reflect.New(reflect.TypeOf((*RequestT)(nil)).Elem()).Interface()
 
 		if err = c.ShouldBind(requestPtr); err != nil {
-			logger.WithError(err).Errorf(ctx, "failed to bind, uri: %s, request: %+v", c.Request.RequestURI, requestPtr)
+			logger.WithError(err).Errorf(ctx, "failed to bind, uri: %s", c.Request.RequestURI)
 			body = body.WithErrorx(ErrorWithBadRequest())
 			c.PureJSON(http.StatusBadRequest, body)
 			return
+		}
+
+		if len(c.Params) > 0 {
+			if err = c.ShouldBindUri(requestPtr); err != nil {
+				logger.WithError(err).Errorf(ctx, "failed to bind uri, uri: %s, param: %+v", c.Request.RequestURI, c.Params)
+				body = body.WithErrorx(ErrorWithBadRequest())
+				c.PureJSON(http.StatusBadRequest, body)
+				return
+			}
 		}
 
 		if ginCtx {

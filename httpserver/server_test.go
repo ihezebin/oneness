@@ -42,7 +42,7 @@ func TestHandler(t *testing.T) {
 	handler.GET("ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
 	})
-	handler.Any("hello", NewHandlerFunc(HandleHello))
+	handler.Any("hello/:id", NewHandlerFunc(HandleHello))
 	handler.GET("hi", NewHandlerFuncEnhanced(HandleHi))
 
 	if err := Run(ctx, 8080); err != nil {
@@ -51,6 +51,7 @@ func TestHandler(t *testing.T) {
 }
 
 type req struct {
+	Id   string `json:"id" form:"id" uri:"id"`
 	Name string `json:"name" form:"name"`
 	Age  int    `json:"age" form:"age"`
 }
