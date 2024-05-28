@@ -11,6 +11,7 @@ type Code int
 const (
 	CodeOK Code = iota
 
+	CodeValidateRuleFailed
 	CodeInternalServerError
 	CodeBadRequest
 	CodeUnauthorized
@@ -22,7 +23,7 @@ const (
 	CodeAccepted
 	CodeNoContent
 	CodeResetContent
-	CodeValidateRuleFailed
+	CodeAuthorizationFailed
 )
 
 const (
@@ -97,5 +98,21 @@ func ErrorWithInternalServer() *Error {
 	return &Error{
 		Code: CodeInternalServerError,
 		Err:  errors.New(code2MessageM[CodeInternalServerError]),
+	}
+}
+
+func ErrWithUnAuthorized() *Error {
+	return &Error{
+		Status: http.StatusUnauthorized,
+		Code:   CodeUnauthorized,
+		Err:    errors.New(code2MessageM[CodeUnauthorized]),
+	}
+}
+
+func ErrorWithAuthorizationFailed(reason string) *Error {
+	return &Error{
+		Status: http.StatusUnauthorized,
+		Code:   CodeAuthorizationFailed,
+		Err:    errors.New(reason),
 	}
 }
