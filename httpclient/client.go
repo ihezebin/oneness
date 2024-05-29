@@ -7,7 +7,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-var client = resty.New().SetTimeout(10 * time.Second).OnBeforeRequest(transmitDataThroughHeaderMiddleware)
+var client = NewClient("")
 
 func Client() *resty.Client {
 	return client
@@ -29,4 +29,12 @@ func NewRequestWithClient(ctx context.Context, c *resty.Client) *resty.Request {
 		c = client
 	}
 	return c.OnBeforeRequest(transmitDataThroughHeaderMiddleware).NewRequest().SetContext(ctx)
+}
+
+// NewClient 多客户端时使用
+func NewClient(host string) *resty.Client {
+	return resty.New().
+		SetBaseURL(host).
+		SetTimeout(10 * time.Second).
+		OnBeforeRequest(transmitDataThroughHeaderMiddleware)
 }
