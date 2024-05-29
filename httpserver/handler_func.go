@@ -75,6 +75,15 @@ func newHandlerFunc[RequestT any, ResponseT any](ginCtx bool, fn HandlerFn[Reque
 			}
 		}
 
+		if len(c.Request.Header) > 0 {
+			if err = c.ShouldBindHeader(requestPtr); err != nil {
+				logger.WithError(err).Errorf(ctx, "failed to bind header, uri: %s, header: %+v", c.Request.RequestURI, c.Request.Header)
+				body = body.WithErrorx(ErrorWithBadRequest())
+				c.PureJSON(http.StatusBadRequest, body)
+				return
+			}
+		}
+
 		if ginCtx {
 			responsePtr, err = fnEnhanced(c, requestPtr.(*RequestT))
 			if c.Writer.Written() {

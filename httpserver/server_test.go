@@ -51,9 +51,10 @@ func TestHandler(t *testing.T) {
 }
 
 type req struct {
-	Id   string `json:"id" form:"id" uri:"id"`
-	Name string `json:"name" form:"name"`
-	Age  int    `json:"age" form:"age"`
+	Id    string `json:"id" form:"id" uri:"id"`
+	Name  string `json:"name" form:"name"`
+	Age   int    `json:"age" form:"age"`
+	Token string `json:"token" header:"token-aa"`
 }
 
 type resp struct {
