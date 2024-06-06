@@ -20,7 +20,7 @@ func defaultLogger() *logrus.Logger {
 			TimestampFormat: "2006-01-02 15:04:05",
 		},
 		Hooks:        make(logrus.LevelHooks),
-		Level:        logrus.InfoLevel,
+		Level:        logrus.DebugLevel,
 		ExitFunc:     os.Exit,
 		ReportCaller: false,
 	}
