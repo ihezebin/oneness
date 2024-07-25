@@ -3,6 +3,7 @@ package logger
 import (
 	"context"
 	"os"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -17,7 +18,7 @@ func defaultLogger() *logrus.Logger {
 	l := &logrus.Logger{
 		Out: os.Stderr,
 		Formatter: &logrus.JSONFormatter{
-			TimestampFormat: "2006-01-02 15:04:05",
+			TimestampFormat: time.DateTime,
 		},
 		Hooks:        make(logrus.LevelHooks),
 		Level:        logrus.DebugLevel,

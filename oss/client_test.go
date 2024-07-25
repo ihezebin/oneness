@@ -1,7 +1,9 @@
 package oss
 
 import (
+	"bytes"
 	"context"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -65,7 +67,7 @@ func TestMinioClient(t *testing.T) {
 
 func TestOSSClient(t *testing.T) {
 	ctx := context.Background()
-	client, err := NewClient("oss://LTAI5tRrwfxuS3TYvawJixRu:jXnXHt22oDtwIVhQSrMXCyiRamG92q@oss-cn-chengdu.aliyuncs.com/oneness-test")
+	client, err := NewClient("oss://xxx:xxx@oss-cn-chengdu.aliyuncs.com/oneness-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,9 +96,33 @@ func TestOSSClient(t *testing.T) {
 	}
 }
 
+func TestCosClientData(t *testing.T) {
+	ctx := context.Background()
+	client, err := NewClient("cos://xxx:xxx@cos.ap-chengdu.myqcloud.com/test-1258606727")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = client.PutObject(ctx, "test_data", bytes.NewReader([]byte("test_data")))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	object, err := client.GetObject(ctx, "test_data")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data, err := io.ReadAll(object)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("%s", data)
+}
+
 func TestCosClient(t *testing.T) {
 	ctx := context.Background()
-	client, err := NewClient("cos://AKIDpaXWddWVYTB5whEb0LlCVklYBjCXu8B6:t4B6uQpGrQ9lFcmppiVFpZOPLAoV4seH@cos.ap-chengdu.myqcloud.com/test-1258606727")
+	client, err := NewClient("cos://xxx:xxxx@cos.ap-chengdu.myqcloud.com/test-1258606727")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -128,7 +154,7 @@ func TestCosClient(t *testing.T) {
 
 func TestKodoClient(t *testing.T) {
 	ctx := context.Background()
-	client, err := NewClient("kodo://alWFYoSm_BnGy6Wt-XAVFNiSrp4-7ARRTVTPV8pr:CNp5osmW0OKdTkwts0MKGN0qHFTf35LIe6Ys2TFo@z2/oneness-test")
+	client, err := NewClient("kodo://xx-xxx-7ARRTVTPV8pr:xxx@z2/oneness-test")
 	if err != nil {
 		t.Fatal(err)
 	}
