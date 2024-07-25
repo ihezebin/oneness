@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	fmt.Printf("default timezone: %s, set to %s\n", time.Local, util.DefaultTZ)
+	fmt.Printf("[Oneness] Default TimeZone: %s, Set to %s\n", time.Local.String(), util.DefaultTZ.String())
 	//默认初始化程序时区为东8区
 	time.Local = util.DefaultTZ
 }
