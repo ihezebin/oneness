@@ -8,9 +8,12 @@ import (
 )
 
 func init() {
-	fmt.Printf("[Oneness] Default TimeZone: %s, Set to %s\n", time.Local.String(), util.DefaultTZ.String())
+	now := time.Now()
+	beforeTime := now.Format(time.DateTime)
 	//默认初始化程序时区为东8区
 	time.Local = util.DefaultTZ
+	afterTime := now.In(time.Local).Format(time.DateTime)
+	fmt.Printf("[Oneness] Now default TimeZone: %s, Set to %s\n", beforeTime, afterTime)
 }
 
 // UseUTC 支持显示调用，设置程序时区为UTC时区
