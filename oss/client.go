@@ -27,12 +27,17 @@ type ObjectInfo struct {
 	Expires      time.Time
 }
 
+type Object struct {
+	Data io.ReadCloser
+	Key  string
+}
+
 type Client interface {
 	StatObject(ctx context.Context, name string) (*ObjectInfo, error)
 
 	GetObject(ctx context.Context, name string) (io.ReadCloser, error)
 
-	GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]io.ReadCloser, error)
+	GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]Object, error)
 
 	PutObject(ctx context.Context, name string, reader io.Reader, opts ...PutOption) error
 

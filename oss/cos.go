@@ -42,10 +42,10 @@ func (c *cosClient) StatObject(ctx context.Context, name string) (*ObjectInfo, e
 	return info, nil
 }
 
-func (c *cosClient) GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]io.ReadCloser, error) {
+func (c *cosClient) GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]Object, error) {
 	opt := newGetObjectsOptions(opts...)
 
-	objs := make([]io.ReadCloser, 0)
+	objs := make([]Object, 0)
 
 	isTruncated := true
 	marker := ""
@@ -66,7 +66,10 @@ func (c *cosClient) GetObjects(ctx context.Context, prefix string, opts ...GetOb
 				return nil, errors.Wrapf(err, "cos get object err")
 			}
 
-			objs = append(objs, object)
+			objs = append(objs, Object{
+				Key:  key,
+				Data: object,
+			})
 		}
 		isTruncated = v.IsTruncated // 是否还有数据
 		marker = v.NextMarker       // 设置下次请求的起始 key

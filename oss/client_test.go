@@ -135,7 +135,7 @@ func TestCosClientGetObjects(t *testing.T) {
 	t.Logf("%d", len(objects))
 
 	for i, object := range objects {
-		data, err := io.ReadAll(object)
+		data, err := io.ReadAll(object.Data)
 		if err != nil {
 			t.Fatal(err)
 		}

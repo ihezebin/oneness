@@ -32,10 +32,10 @@ func (c *minioClient) StatObject(ctx context.Context, name string) (*ObjectInfo,
 	}, nil
 }
 
-func (c *minioClient) GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]io.ReadCloser, error) {
+func (c *minioClient) GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]Object, error) {
 	objectsCh := c.kernel.ListObjects(ctx, c.bucket, minio.ListObjectsOptions{Prefix: prefix})
 
-	objs := make([]io.ReadCloser, 0)
+	objs := make([]Object, 0)
 
 	for obj := range objectsCh {
 
@@ -44,7 +44,10 @@ func (c *minioClient) GetObjects(ctx context.Context, prefix string, opts ...Get
 			return nil, errors.Wrapf(err, "minio get object err")
 		}
 
-		objs = append(objs, object)
+		objs = append(objs, Object{
+			Key:  obj.Key,
+			Data: object,
+		})
 	}
 
 	return objs, nil

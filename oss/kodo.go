@@ -36,7 +36,7 @@ func (c *kodoClient) StatObject(ctx context.Context, name string) (*ObjectInfo, 
 	}, nil
 }
 
-func (c *kodoClient) GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]io.ReadCloser, error) {
+func (c *kodoClient) GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]Object, error) {
 	return nil, errors.New("not implement")
 }
 
