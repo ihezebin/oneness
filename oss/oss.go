@@ -37,6 +37,10 @@ func (c *ossClient) StatObject(ctx context.Context, name string) (*ObjectInfo, e
 	return info, nil
 }
 
+func (c *ossClient) GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]io.ReadCloser, error) {
+	return nil, errors.New("not implement")
+}
+
 func (c *ossClient) GetObject(ctx context.Context, name string) (io.ReadCloser, error) {
 	obj, err := c.bucket.GetObject(name)
 	if err != nil {

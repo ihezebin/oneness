@@ -36,6 +36,10 @@ func (c *kodoClient) StatObject(ctx context.Context, name string) (*ObjectInfo, 
 	}, nil
 }
 
+func (c *kodoClient) GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]io.ReadCloser, error) {
+	return nil, errors.New("not implement")
+}
+
 func (c *kodoClient) GetObject(ctx context.Context, name string) (io.ReadCloser, error) {
 	obj, err := c.bucketManager.Get(c.bucket, name, &storage.GetObjectInput{
 		PresignUrl: true, // 下载 URL 是否进行签名，源站域名或者私有空间需要配置为 true

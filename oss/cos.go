@@ -13,6 +13,7 @@ import (
 	"github.com/tencentyun/cos-go-sdk-v5"
 )
 
+// https://cloud.tencent.com/document/product/436/31215
 type cosClient struct {
 	kernel    *cos.Client
 	bucket    string
@@ -39,6 +40,39 @@ func (c *cosClient) StatObject(ctx context.Context, name string) (*ObjectInfo, e
 	}
 
 	return info, nil
+}
+
+func (c *cosClient) GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]io.ReadCloser, error) {
+	opt := newGetObjectsOptions(opts...)
+
+	objs := make([]io.ReadCloser, 0)
+
+	isTruncated := true
+	marker := ""
+	for isTruncated {
+		v, _, err := c.kernel.Bucket.Get(ctx, &cos.BucketGetOptions{
+			Prefix:    prefix,
+			MaxKeys:   opt.Limit,
+			Marker:    marker,
+			Delimiter: "/", // 固定按目录查找
+		})
+		if err != nil {
+			return nil, errors.Wrapf(err, "cos get objects err, marker: %v, isTruncated: %v", marker, isTruncated)
+		}
+		for _, content := range v.Contents {
+			key := content.Key
+			object, err := c.GetObject(ctx, key)
+			if err != nil {
+				return nil, errors.Wrapf(err, "cos get object err")
+			}
+
+			objs = append(objs, object)
+		}
+		isTruncated = v.IsTruncated // 是否还有数据
+		marker = v.NextMarker       // 设置下次请求的起始 key
+	}
+
+	return objs, nil
 }
 
 func (c *cosClient) GetObject(ctx context.Context, name string) (io.ReadCloser, error) {

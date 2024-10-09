@@ -96,7 +96,7 @@ func TestOSSClient(t *testing.T) {
 	}
 }
 
-func TestCosClientData(t *testing.T) {
+func TestCosClientGetObject(t *testing.T) {
 	ctx := context.Background()
 	client, err := NewClient("cos://xxx:xxx@cos.ap-chengdu.myqcloud.com/test-1258606727")
 	if err != nil {
@@ -118,6 +118,30 @@ func TestCosClientData(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Logf("%s", data)
+}
+
+func TestCosClientGetObjects(t *testing.T) {
+	ctx := context.Background()
+	client, err := NewClient("cos://xxx:xxx@cos.ap-chengdu.myqcloud.com/test-1258606727")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	objects, err := client.GetObjects(ctx, "backup_test/blog-minio/preview/")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%d", len(objects))
+
+	for i, object := range objects {
+		data, err := io.ReadAll(object)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Logf("%s", data)
+		t.Logf("%d", i)
+	}
 }
 
 func TestCosClient(t *testing.T) {

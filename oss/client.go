@@ -27,39 +27,12 @@ type ObjectInfo struct {
 	Expires      time.Time
 }
 
-type PutOptions struct {
-	Size        int64
-	ContentType string
-}
-
-type PutOption func(*PutOptions)
-
-func WithSize(size int64) PutOption {
-	return func(opt *PutOptions) {
-		opt.Size = size
-	}
-}
-
-func WithContentType(contentType string) PutOption {
-	return func(opt *PutOptions) {
-		opt.ContentType = contentType
-	}
-}
-
-func newPutOptions(opts ...PutOption) *PutOptions {
-	opt := &PutOptions{
-		Size: -1,
-	}
-	for _, optFunc := range opts {
-		optFunc(opt)
-	}
-	return opt
-}
-
 type Client interface {
 	StatObject(ctx context.Context, name string) (*ObjectInfo, error)
 
 	GetObject(ctx context.Context, name string) (io.ReadCloser, error)
+
+	GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]io.ReadCloser, error)
 
 	PutObject(ctx context.Context, name string, reader io.Reader, opts ...PutOption) error
 
@@ -94,8 +67,8 @@ func NewClient(dsn string) (Client, error) {
 	case SchemeCOS:
 		return NewCOSClient(u.Host, accessKey, secretKey, bucket)
 	//case SchemeUS3:
-	//case SchemeKodo:
-	//return NewKodoClient(u.Host, accessKey, secretKey, bucket)
+	case SchemeKodo:
+		return NewKodoClient(u.Host, accessKey, secretKey, bucket)
 	default:
 		return nil, errors.Errorf("unsupported schema: %s", u.Scheme)
 	}
