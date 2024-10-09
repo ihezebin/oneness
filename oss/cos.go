@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -43,6 +44,9 @@ func (c *cosClient) StatObject(ctx context.Context, name string) (*ObjectInfo, e
 }
 
 func (c *cosClient) GetObjects(ctx context.Context, prefix string, opts ...GetObjectsOption) ([]Object, error) {
+	prefix += "/"
+	prefix = strings.ReplaceAll(prefix, "//", "/")
+
 	opt := newGetObjectsOptions(opts...)
 
 	objs := make([]Object, 0)
